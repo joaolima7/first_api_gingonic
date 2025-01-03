@@ -1,6 +1,14 @@
 version: "3.9"
 
 services:
+  go_app:
+    container_name: go_app
+    image: first-api-go_app
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - go_db
   go_db:
     container_name: go_db
     image: postgres:12
