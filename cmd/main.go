@@ -27,18 +27,12 @@ func main() {
 	//Controller layer
 	ProductController := controller.NewProductController(ProductUseCase)
 
-	server.GET("/ping", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-
+	//Endpoints
 	server.GET("/products", ProductController.GetProducts)
 	server.GET("/product/:id", ProductController.FindProductByID)
 	server.POST("/product", ProductController.CreateProduct)
 	server.PUT("/product/update/:id", ProductController.UpdateProduct)
 	server.DELETE("/product/del/:id", ProductController.DeleteProduct)
-	//Auth com JWT
 
 	server.Run(":8000")
 }
