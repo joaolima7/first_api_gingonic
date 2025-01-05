@@ -33,3 +33,11 @@ func (pu *ProductUseCase) CreateProduct(product model.Product) (model.Product, e
 func (pu *ProductUseCase) FindProductByID(id int) (*model.Product, error) {
 	return pu.repository.FindProductByID(id)
 }
+
+func (pu *ProductUseCase) UpdateProduct(updates map[string]interface{}, id int) (bool, error) {
+	return pu.repository.UpdateProduct(updates, id)
+}
+
+func (pu *ProductUseCase) DeleteProduct(id int) (bool, error) {
+	return pu.repository.DeleteProduct(id)
+}

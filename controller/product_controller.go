@@ -82,3 +82,88 @@ func (p *productController) FindProductByID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, product)
 }
+
+func (p *productController) UpdateProduct(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if id == "" {
+		response := model.Response{
+			Message: "ID is required.",
+		}
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	productID, err := strconv.Atoi(id)
+	if err != nil {
+		response := model.Response{
+			Message: "Param is not a number.",
+		}
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	var productUpdates map[string]interface{}
+	err = ctx.ShouldBindJSON(&productUpdates)
+	if err != nil {
+		response := model.Response{
+			Message: "Invalid JSON body.",
+		}
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	updated, err := p.productUseCase.UpdateProduct(productUpdates, productID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if updated {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "Product updated successfully",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusNotFound, gin.H{
+		"message": "Product not found",
+	})
+}
+
+func (p *productController) DeleteProduct(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "ID is required.",
+		})
+		return
+	}
+
+	productID, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "ID not is a number.",
+		})
+		return
+	}
+
+	isDeleted, err := p.productUseCase.DeleteProduct(productID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error in delete Product. " + err.Error(),
+		})
+		return
+	}
+
+	if isDeleted {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "Product deleted successfully",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusNotFound, gin.H{
+		"message": "Product not found",
+	})
+}
